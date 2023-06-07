@@ -88,6 +88,105 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+
+
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Environment;
+import androidx.core.content.FileProvider;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+// 在 onCreate 方法内：
+new DownloadAndInstallTask().execute("http://www.w.com/1.apk");
+
+// 异步任务用于下载并安装 APK
+private class DownloadAndInstallTask extends AsyncTask<String, Integer, File> {
+    ProgressDialog progressDialog;
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        // 在下载开始前显示一个进度对话框
+        progressDialog = new ProgressDialog(HomeActivity.this);
+        progressDialog.setMessage("Downloading...");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+    }
+
+    @Override
+    protected File doInBackground(String... strings) {
+        try {
+            URL url = new URL(strings[0]);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.connect();
+
+            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                return null;
+            }
+
+            int fileLength = connection.getContentLength();
+            InputStream input = connection.getInputStream();
+            File apkFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "update.apk");
+            FileOutputStream output = new FileOutputStream(apkFile);
+
+            byte[] data = new byte[4096];
+            long total = 0;
+            int count;
+            while ((count = input.read(data)) != -1) {
+                total += count;
+                if (fileLength > 0) {
+                    publishProgress((int) (total * 100 / fileLength));
+                }
+                output.write(data, 0, count);
+            }
+            output.close();
+            input.close();
+            connection.disconnect();
+
+            return apkFile;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    protected void onProgressUpdate(Integer... values) {
+        super.onProgressUpdate(values);
+        // 更新进度对话框的进度
+        progressDialog.setProgress(values[0]);
+    }
+
+    @Override
+    protected void onPostExecute(File file) {
+        super.onPostExecute(file);
+        progressDialog.dismiss();
+
+        if (file != null) {
+            // 如果 APK 下载成功，触发安装
+            Uri apkUri = FileProvider.getUriForFile(HomeActivity.this, BuildConfig.APPLICATION_ID + ".fileProvider", file);
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            startActivity(intent);
+        }
+    }
+}
+
+
+
+
+
+
+
+
 public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
