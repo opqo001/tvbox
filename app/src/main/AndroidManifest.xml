@@ -10,6 +10,9 @@
         android:name="android.software.leanback"
         android:required="false" />
 //添加的内容
+        <!-- 添加访问网络权限用于更新 -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <!-- 这两个权限是用于在设备的存储上读写文件 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
