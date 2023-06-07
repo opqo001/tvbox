@@ -9,6 +9,15 @@
     <uses-feature
         android:name="android.software.leanback"
         android:required="false" />
+//添加的内容
+    <!-- 这两个权限是用于在设备的存储上读写文件 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+
+    <!-- REQUEST_INSTALL_PACKAGES 权限是用于安装 APK 文件 -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
+//添加的内容
+
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -41,11 +50,25 @@
         android:theme="@style/AppTheme.NoActionBar"
         android:requestLegacyExternalStorage="true"
         android:usesCleartextTraffic="true">
+//添加的内容 
+        <!-- requestLegacyExternalStorage 属性是用于在 Android 10 及以上版本上保持对整个外部存储的访问 -->
+        android:roundIcon="@mipmap/ic_launcher_round"
 
+        <!-- 在这里添加你的 activities -->
+        <!-- FileProvider 是用于在 Android 7.0 及以上版本共享文件给其他应用 -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+//添加的内容
         <activity
             android:name=".ui.activity.HomeActivity"
             android:screenOrientation="sensorLandscape"
-            android:exported="true">
+            //注释掉的重复的android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
