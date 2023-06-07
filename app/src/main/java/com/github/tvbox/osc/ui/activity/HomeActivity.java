@@ -77,6 +77,72 @@ import java.util.List;
 
 import me.jessyan.autosize.utils.AutoSizeUtils;
 
+//添加的内容添加的内容添加的内容添加的内容添加的内容添加的内容添加的内容
+import android.Manifest;
+import android.os.Bundle;
+import android.os.Environment;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+public class HomeActivity extends AppCompatActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_home);
+
+        // 请求所需的权限
+        ActivityCompat.requestPermissions(
+            this,
+            new String[] {
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.MANAGE_EXTERNAL_STORAGE
+            },
+            1
+        );
+
+        // 'tvbox' 是你的 assets 文件夹中的文件夹名称，如果你的文件夹名称不同，你需要修改这里
+        // 'Environment.getExternalStorageDirectory()' 返回设备的根目录，你可以修改这个路径以复制文件夹到不同的位置
+        File tvboxDir = new File(Environment.getExternalStorageDirectory(), "tvbox");
+
+        // 不管设备的根目录下是否已经存在 tvbox 文件夹，都直接复制文件夹
+        // 'tvbox' 和 'tvboxDir.getAbsolutePath()' 中的 'tvbox' 也是你的 assets 文件夹中的文件夹名称，如果你的文件夹名称不同，你需要修改这里
+        copyAssetFolder("tvbox", tvboxDir.getAbsolutePath());
+    }
+
+    // 这个函数是用于复制整个文件夹
+    private boolean copyAssetFolder(String fromAssetPath, String toPath) {
+        try {
+            String[] files = getAssets().list(fromAssetPath);
+            if (files.length == 0) {
+                // 如果文件夹为空，则复制文件
+                return copyAssetFile(fromAssetPath, toPath);
+            } else {
+                // 否则，递归复制文件夹中的每个文件
+                new File(toPath).mkdirs();
+                boolean res = true;
+                for (String file : files)
+                    res = res && copyAssetFolder(fromAssetPath + "/" + file, toPath + "/" + file);
+                return res;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // 这个函数是用于复制单个文件
+    private boolean copyAssetFile(String fromAssetPath, String toPath) {
+        try (InputStream in = getAssets().open(fromAssetPath)) {
+            try (OutputStream out = new FileOutputStream(toPath)) {
+                byte[] buffer = new byte[1024
+//添加的内容添加的内容添加的内容添加的内容添加的内容添加的内容添加的内容添加的内容
+                                         
+                                         
+                                         
 public class HomeActivity extends BaseActivity {
 
     // takagen99: Added to allow read string
